@@ -1,15 +1,14 @@
-# Validation design
+# Validation notes
 
-The competition test dates are 2015-08-01 through 2015-09-17. The validation option holds out the last 42 calendar days of labeled data, ending 2015-07-31, and trains only on earlier dates. This mirrors the forecast horizon and avoids random-split leakage.
+Both CatBoost models were evaluated on the same chronological holdout: 2015-06-20 through 2015-07-31 (42 days). Training rows precede the cutoff. RMSPE excludes rows whose actual Sales value is zero.
 
-The scoring helper excludes actual zero-sales rows, matching the competition's RMSPE description. The model is trained on log1p(Sales), then transformed back to nonnegative sales. Test rows with Open=0 are explicitly set to zero.
+| Model | RMSPE |
+|---|---:|
+| Calendar-only baseline | 0.175309 |
+| Past-history feature model | 0.161062 |
 
-## Measured run
+The history-feature model improved RMSPE by 8.1%. It uses past-only mean log sales grouped by store and weekday, and by store, weekday, and promotion. For training rows the aggregates are expanding and shifted so the current target is excluded. Holdout feature aggregates use only the pre-cutoff training period.
 
-- Validation RMSPE: **0.175309**
-- Validation window: 2015-06-20 through 2015-07-31 (42 calendar days)
-- CatBoost configuration: depth 9, learning rate 0.055, maximum 450 iterations, early stopping; best iteration 417 (418 trees)
-- Full-data fit: 418 trees
-- Submission: 41,088 rows; IDs match `sample_submission.csv` in order; closed stores have zero predictions
+The history model used depth 9, learning rate 0.055, seed 42, and early stopping. The best iteration was 724 (zero-based), so 725 trees were used when fitting on all labeled rows. The target is `log1p(Sales)`; predictions are transformed back with `expm1`.
 
-This score is a single forward holdout estimate. Keep experimenting with time-based validation and compare RMSPE before claiming a model improvement.
+This is one forward holdout, not a leaderboard result. `reports/metrics-calendar.json`, `reports/metrics-history.json`, and the paired validation prediction CSVs contain the source values for the README comparison.

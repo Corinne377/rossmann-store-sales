@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" width="900" height="370" viewBox="0 0 900 370">
+<title id="title">Weekly actual and predicted sales</title>
+<desc id="desc">Six weekly sales totals on the forward validation window, in millions. The history-feature model tracks actual totals more closely than the calendar baseline.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;fill:#243447}.muted{fill:#52606d;font-size:13px}.title{font-size:19px;font-weight:600}.value{font-size:15px;font-weight:600}</style>
+<text class="title" x="48" y="38">Weekly sales totals on the forward holdout</text>
+<line x1="80" y1="290.0" x2="850" y2="290.0" stroke="#d9dfe5"/>
+<text class="muted" x="68" y="294.0" text-anchor="end">0.0</text>
+<line x1="80" y1="240.0" x2="850" y2="240.0" stroke="#d9dfe5"/>
+<text class="muted" x="68" y="244.0" text-anchor="end">15.2</text>
+<line x1="80" y1="190.0" x2="850" y2="190.0" stroke="#d9dfe5"/>
+<text class="muted" x="68" y="194.0" text-anchor="end">30.3</text>
+<line x1="80" y1="140.0" x2="850" y2="140.0" stroke="#d9dfe5"/>
+<text class="muted" x="68" y="144.0" text-anchor="end">45.5</text>
+<line x1="80" y1="90.0" x2="850" y2="90.0" stroke="#d9dfe5"/>
+<text class="muted" x="68" y="94.0" text-anchor="end">60.7</text>
+<path d="M 80.0 162.8 L 234.0 104.8 L 388.0 154.2 L 542.0 119.2 L 696.0 158.6 L 850.0 113.5" fill="none" stroke="#243447" stroke-width="3"/>
+<circle cx="80.0" cy="162.8" r="5" fill="#243447"/>
+<circle cx="234.0" cy="104.8" r="5" fill="#243447"/>
+<circle cx="388.0" cy="154.2" r="5" fill="#243447"/>
+<circle cx="542.0" cy="119.2" r="5" fill="#243447"/>
+<circle cx="696.0" cy="158.6" r="5" fill="#243447"/>
+<circle cx="850.0" cy="113.5" r="5" fill="#243447"/>
+<path d="M 80.0 161.9 L 234.0 135.3 L 388.0 163.8 L 542.0 141.0 L 696.0 164.5 L 850.0 140.4" fill="none" stroke="#96a1ad" stroke-width="3"/>
+<rect x="76.0" y="157.9" width="8" height="8" fill="#96a1ad"/>
+<rect x="230.0" y="131.3" width="8" height="8" fill="#96a1ad"/>
+<rect x="384.0" y="159.8" width="8" height="8" fill="#96a1ad"/>
+<rect x="538.0" y="137.0" width="8" height="8" fill="#96a1ad"/>
+<rect x="692.0" y="160.5" width="8" height="8" fill="#96a1ad"/>
+<rect x="846.0" y="136.4" width="8" height="8" fill="#96a1ad"/>
+<path d="M 80.0 159.8 L 234.0 123.9 L 388.0 159.3 L 542.0 131.2 L 696.0 162.1 L 850.0 127.4" fill="none" stroke="#1f77b4" stroke-width="3"/>
+<circle cx="80.0" cy="159.8" r="5" fill="#1f77b4"/>
+<circle cx="234.0" cy="123.9" r="5" fill="#1f77b4"/>
+<circle cx="388.0" cy="159.3" r="5" fill="#1f77b4"/>
+<circle cx="542.0" cy="131.2" r="5" fill="#1f77b4"/>
+<circle cx="696.0" cy="162.1" r="5" fill="#1f77b4"/>
+<circle cx="850.0" cy="127.4" r="5" fill="#1f77b4"/>
+<text class="muted" x="80.0" y="313" text-anchor="middle">1</text>
+<text class="muted" x="234.0" y="313" text-anchor="middle">2</text>
+<text class="muted" x="388.0" y="313" text-anchor="middle">3</text>
+<text class="muted" x="542.0" y="313" text-anchor="middle">4</text>
+<text class="muted" x="696.0" y="313" text-anchor="middle">5</text>
+<text class="muted" x="850.0" y="313" text-anchor="middle">6</text>
+<line x1="190" y1="343" x2="214" y2="343" stroke="#243447" stroke-width="3"/>
+<text class="muted" x="222" y="348">Actual</text>
+<line x1="420" y1="343" x2="444" y2="343" stroke="#96a1ad" stroke-width="3"/>
+<text class="muted" x="452" y="348">Calendar baseline</text>
+<line x1="650" y1="343" x2="674" y2="343" stroke="#1f77b4" stroke-width="3"/>
+<text class="muted" x="682" y="348">History-feature model</text>
+<text class="muted" x="465" y="335" text-anchor="middle">Holdout week</text>
+<text class="muted" transform="translate(23 195) rotate(-90)" text-anchor="middle">Total sales (millions)</text>
+</svg>

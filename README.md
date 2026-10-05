@@ -1,12 +1,40 @@
-# Rossmann Store Sales
+# Rossmann Store Sales — Sales Forecasting
 
-A reproducible CatBoost baseline for the Kaggle Rossmann Store Sales forecasting competition. It predicts the six-week test horizon using store, date, promotion, holiday, and competition features. Customer counts are excluded because they are not available in the test set.
+A forward-looking store/day sales forecasting model built with CatBoost. The final model adds **past-only sales history** for each store by weekday and by weekday × promotion. On a chronological 42-day holdout, it reduced RMSPE by **8.1%** versus the calendar-only CatBoost baseline.
 
-## Evaluation
+## Results
 
-Kaggle scores Root Mean Square Percentage Error (RMSPE), excluding rows with zero actual sales. The script reports this metric on a chronological 42-day holdout that ends on the final date in the training data, matching the six-week competition horizon. This is a local estimate, not a leaderboard guarantee.
+![RMSPE comparison between the calendar-only baseline and the history-feature model](reports/figures/model-comparison.svg)
 
-## Setup (macOS)
+| Model | Holdout RMSPE | Relative change |
+|---|---:|---:|
+| Calendar-feature CatBoost baseline | 0.175309 | — |
+| **History-feature CatBoost model** | **0.161062** | **8.1% lower** |
+
+Lower RMSPE is better. The score excludes actual zero-sales rows, as the competition metric does. It is a local holdout result, not a Kaggle leaderboard score.
+
+### Weekly forecast comparison
+
+![Actual and predicted weekly sales totals across the validation window](reports/figures/weekly-forecast.svg)
+
+### Most influential features
+
+![Top model feature importances](reports/figures/feature-importance.svg)
+
+## Validation design
+
+The final 42 calendar days of the labeled data (June 20–July 31, 2015) are held out as a forward forecast. The model trains on earlier dates only. Historical sales features for each training row use preceding observations only; the validation period uses history available before June 20 throughout, so actual holdout sales never enter those features.
+
+The holdout contains 46,830 store/day rows; 40,282 have nonzero actual sales and contribute to RMSPE. Both models use the same split, target transform, CatBoost settings, and metric. The baseline uses calendar, promotion, holiday, store, and competitor features. The final model adds two historical log-sales averages: store × weekday, and store × weekday × promotion. Early stopping selected 725 trees for the final model.
+
+
+## Model artifact
+
+The trained full-data CatBoost model is included at [`models/rossmann_sales.cbm.xz`](models/rossmann_sales.cbm.xz). It is losslessly compressed to fit GitHub’s regular file-size limit. `src/predict.py` automatically unpacks it to an ignored local cache on first use.
+
+The raw competition CSVs are not included in Git. Download them from [Kaggle](https://www.kaggle.com/competitions/rossmann-store-sales/data) after accepting the competition rules and place `train.csv`, `store.csv`, and any forecast input CSV in `data/raw/`. The Kaggle data is subject to its competition rules.
+
+## Run the project on macOS
 
 ```bash
 python3 -m venv .venv
@@ -15,28 +43,52 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-CatBoost runs on CPU by default and uses all available CPU threads. This works on both Intel and Apple Silicon MacBook Pros; no GPU setup is required.
-
-## Data
-
-Download `train.csv`, `test.csv`, `store.csv`, and `sample_submission.csv` from the [Kaggle competition data page](https://www.kaggle.com/competitions/rossmann-store-sales/data), accept the competition rules, and place the files in `data/raw/`. Data files are ignored by Git because the dataset is subject to Kaggle's competition rules.
-
-## Train, validate, and create submission
+Reproduce validation and refit the full-data model:
 
 ```bash
-python src/train.py --validation
+python src/train.py --history --iterations 900 --depth 9 --compress-model
 ```
 
-The command evaluates on a forward 42-day holdout, then trains on all labeled rows and writes `submission.csv` in the required `Id,Sales` format. The included run used 450 maximum iterations with early stopping and selected 418 trees. It scored **0.175309 RMSPE** on the holdout. For a faster experiment, use `--iterations 250`; increase the cap to explore longer training. Upload `submission.csv` on Kaggle.
+The script evaluates the final 42 days, selects the best tree count by early stopping, fits on all labeled rows, and saves an uncompressed model to `models/rossmann_sales.cbm`. Add `--compress-model` to also create the lossless `models/rossmann_sales.cbm.xz` archive. To validate without the longer full-data refit, add `--validate-only`. The included compressed model was fitted with 725 trees.
 
-## Project layout
+## Make forecasts with the included model
 
-- `src/train.py` — feature engineering, forward validation, CatBoost fit, and submission generation
-- `data/raw/README.md` — data placement instructions
-- `requirements.txt` — Python dependencies
+Prepare an input CSV with one row per store/date and these fields: `Store`, `Date`, `DayOfWeek`, `Promo`, `Open`, `StateHoliday`, and `SchoolHoliday`. Store metadata is joined from `data/raw/store.csv`.
 
-## Notes
+```bash
+python src/predict.py --input path/to/future_rows.csv --output predictions.csv
+```
 
-- All validation folds are time ordered; random row splits would leak future patterns across the forecast boundary.
-- Closed test stores are assigned zero sales as required by the data semantics.
-- Keep Kaggle credentials out of this repository. The project creates a local submission; upload it through Kaggle after reviewing the file.
+The output contains the available row identifiers, store, date, and `SalesPrediction`. Closed stores are assigned zero. `predictions.csv`, raw Kaggle files, the local model cache, and the uncompressed model are excluded from Git.
+
+## Repository contents
+
+- `src/train.py` — feature engineering, forward validation, full-data fitting, and model export
+- `src/predict.py` — loads the packaged model and creates store/day forecasts
+- `models/rossmann_sales.cbm.xz` — compressed, trained model artifact
+- `reports/metrics-*.json` and `reports/validation-*-predictions.csv` — measured comparison data
+- `reports/make_report_figures.py` — regenerates the README charts
+- `reports/validation-notes.md` — detailed metric and split notes
+- `requirements.txt` — runtime dependencies
+
+## Upload this repository to GitHub
+
+The local Git repository already has `origin` set to `https://github.com/Corinne377/rossmann-store-sales.git`. In Terminal, from the project folder, stage and review these project files:
+
+```bash
+cd "/Users/corinnechen/Documents/Codex/2026-10-04/hi-x20"
+git status --short --ignored
+git add .gitignore README.md requirements.txt src reports models/rossmann_sales.cbm.xz data/raw/README.md
+git status --short
+git commit -m "Add validated Rossmann sales forecasting model"
+```
+
+Review the second `git status` output. It should include the README, source, report files, and compressed model; it should **not** include `.venv`, raw CSVs, `submission.csv`, or the 445 MB uncompressed model.
+
+Push the commit to the existing repository:
+
+```bash
+git push origin main
+```
+
+If you move the project to a different local folder and `git remote -v` shows no `origin`, set it with `git remote add origin https://github.com/Corinne377/rossmann-store-sales.git`, then use `git push -u origin main`. GitHub will prompt you to authenticate if needed.

@@ -1,0 +1,14 @@
+{
+  "model": "CatBoost with calendar features",
+  "validation_rmspe": 0.17530923352489045,
+  "validation_start": "2015-06-20",
+  "validation_end": "2015-07-31",
+  "validation_days": 42,
+  "validation_rows": 46830,
+  "validation_scored_rows": 40282,
+  "best_iteration_zero_based": 417,
+  "selected_trees": 418,
+  "depth": 9,
+  "learning_rate": 0.055,
+  "seed": 42
+}
