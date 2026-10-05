@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__/
+.venv/
+data/raw/*.csv
+!data/raw/README.md
+submission.csv
+*.cbm
+catboost_info/
+.ipynb_checkpoints/
